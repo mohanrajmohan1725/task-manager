@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { FaEdit, FaTrash, FaSave, FaTimes } from "react-icons/fa";
+import toast from "react-hot-toast";
 
 function TaskItem({ task, deleteTask, toggleTask, editTask }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -20,23 +21,40 @@ function TaskItem({ task, deleteTask, toggleTask, editTask }) {
     }
   }, [isEditing]);
 
-  // save
+  // SAVE
   const handleSave = () => {
-    if (!newText.trim()) return;
+    if (!newText.trim()) {
+      toast.error("Task cannot be empty ❌");
+      return;
+    }
 
     editTask(task.id, newText.trim());
+    toast.success("Task updated ✏️");
+
     setIsEditing(false);
+  };
+
+  // DELETE
+  const handleDelete = () => {
+    deleteTask(task.id);
+    toast.success("Task deleted 🗑");
   };
 
   return (
     <motion.div
-      whileHover={{ scale: 1.01 }}
-      className={`flex items-center justify-between gap-3 p-4 rounded-xl shadow-sm border transition
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      transition={{ type: "spring", stiffness: 300 }}
+      className={`flex items-center justify-between gap-3 p-4 rounded-xl 
+      border transition-all duration-300 cursor-pointer
       ${
         task.completed
-          ? "bg-green-50 dark:bg-green-900/30 border-green-400"
-          : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
-      }`}
+          ? "bg-green-50/80 dark:bg-green-900/20 border-green-400"
+          : "bg-white/70 dark:bg-gray-800/70 border-gray-200 dark:border-gray-700"
+      }
+      hover:shadow-xl hover:border-blue-400`}
     >
       {/* LEFT */}
       <div className="flex items-center gap-3 flex-1 min-w-0 overflow-hidden">
@@ -65,7 +83,7 @@ function TaskItem({ task, deleteTask, toggleTask, editTask }) {
             />
           ) : (
             <p
-              className={`truncate font-medium ${
+              className={`truncate font-medium transition-all ${
                 task.completed
                   ? "line-through text-gray-400"
                   : "text-gray-800 dark:text-white"
@@ -90,36 +108,36 @@ function TaskItem({ task, deleteTask, toggleTask, editTask }) {
         </div>
       </div>
 
-      {/* RIGHT ICON BUTTONS */}
+      {/* RIGHT BUTTONS */}
       <div className="flex gap-2 shrink-0">
 
         {/* EDIT / SAVE */}
         {isEditing ? (
           <>
             <button
-              title="Save"
               onClick={handleSave}
-              className="p-2 rounded bg-blue-500 text-white hover:bg-blue-600"
+              className="p-2 rounded bg-blue-500 text-white 
+              hover:scale-110 hover:shadow-md transition"
             >
               <FaSave size={14} />
             </button>
 
             <button
-              title="Cancel"
               onClick={() => {
                 setIsEditing(false);
                 setNewText(task.text);
               }}
-              className="p-2 rounded bg-gray-400 text-white hover:bg-gray-500"
+              className="p-2 rounded bg-gray-400 text-white 
+              hover:scale-110 hover:shadow-md transition"
             >
               <FaTimes size={14} />
             </button>
           </>
         ) : (
           <button
-            title="Edit"
             onClick={() => setIsEditing(true)}
-            className="p-2 rounded bg-yellow-500 text-white hover:bg-yellow-600"
+            className="p-2 rounded bg-yellow-500 text-white 
+            hover:scale-110 hover:shadow-md transition"
           >
             <FaEdit size={14} />
           </button>
@@ -127,9 +145,9 @@ function TaskItem({ task, deleteTask, toggleTask, editTask }) {
 
         {/* DELETE */}
         <button
-          title="Delete"
-          onClick={() => deleteTask(task.id)}
-          className="p-2 rounded bg-red-500 text-white hover:bg-red-600"
+          onClick={handleDelete}
+          className="p-2 rounded bg-red-500 text-white 
+          hover:scale-110 hover:shadow-md transition"
         >
           <FaTrash size={14} />
         </button>

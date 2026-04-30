@@ -1,12 +1,19 @@
 import TaskInput from "../components/TaskInput";
 import TaskTable from "../components/TaskTable";
+import TaskChart from "../components/TaskChart";
 import { useTasks } from "../context/TaskContext";
 import { useProjects } from "../context/ProjectContext";
 
 import Schedule from "../components/Schedule";
 import Notes from "../components/Notes";
 import Navbar from "../components/Navbar";
-import Sidebar from "../components/Sidebar"; // ✅ IMPORTANT
+import Sidebar from "../components/Sidebar";
+
+import {
+  FaTasks,
+  FaCheckCircle,
+  FaHourglassHalf,
+} from "react-icons/fa";
 
 function Home() {
   const { tasks } = useTasks();
@@ -15,7 +22,6 @@ function Home() {
   const completed = tasks.filter((t) => t.completed).length;
   const pending = tasks.length - completed;
 
-  // Greeting
   const getGreeting = () => {
     const hour = new Date().getHours();
     if (hour < 12) return "Good Morning ☀️";
@@ -31,46 +37,131 @@ function Home() {
   });
 
   return (
-    <div className="flex min-h-screen bg-gray-100 dark:bg-gray-900 transition">
+    <div className="flex flex-col md:flex-row min-h-screen 
+    bg-gradient-to-br from-gray-100 to-gray-200 
+    dark:from-gray-900 dark:to-black transition">
 
-      {/* ✅ NEW SIDEBAR */}
+      {/* 📱 SIDEBAR */}
       <Sidebar />
 
-      {/* 🔴 Main */}
-      <div className="flex-1 p-6 space-y-4">
+      {/* MAIN */}
+      <div className="flex-1 p-4 md:p-6 space-y-6">
 
         <Navbar />
 
-        <div className="max-w-4xl mx-auto space-y-4">
+        <div className="max-w-6xl mx-auto space-y-8">
 
-          <p className="text-gray-500 dark:text-gray-400">{today}</p>
+          {/* 🔥 HEADER */}
+          <div className="bg-gradient-to-r from-indigo-500 to-purple-600 
+          text-white p-5 md:p-6 rounded-2xl shadow-xl">
 
-          <div className="space-y-3">
-            <h1 className="text-3xl font-bold dark:text-white">
+            <p className="opacity-80 text-sm md:text-base">{today}</p>
+
+            <h1 className="text-2xl md:text-3xl font-bold mt-1">
               {activeProject
                 ? activeProject.name
                 : `${getGreeting()} Mohan 👋`}
             </h1>
 
-            <div className="flex gap-4 bg-white dark:bg-gray-800 px-5 py-2 rounded-xl shadow w-fit">
-              <div className="dark:text-white">⏱ <b>{tasks.length}</b></div>
-              <div className="dark:text-white">✔ <b>{completed}</b></div>
-              <div className="dark:text-white">📊 <b>{pending}</b></div>
+            {/* 📊 STATS */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+
+              {/* TOTAL */}
+              <div className="flex items-center gap-3 
+              bg-white/10 backdrop-blur-md 
+              border border-white/20 
+              p-4 rounded-xl shadow-md 
+              hover:scale-[1.03] transition">
+
+                <div className="p-3 bg-blue-500/20 rounded-lg">
+                  <FaTasks className="text-blue-300 text-lg" />
+                </div>
+
+                <div>
+                  <p className="text-xs md:text-sm opacity-70">Total</p>
+                  <h2 className="text-lg md:text-xl font-bold">{tasks.length}</h2>
+                </div>
+              </div>
+
+              {/* COMPLETED */}
+              <div className="flex items-center gap-3 
+              bg-green-400/10 backdrop-blur-md 
+              border border-green-400/20 
+              p-4 rounded-xl shadow-md 
+              hover:scale-[1.03] transition">
+
+                <div className="p-3 bg-green-400/20 rounded-lg">
+                  <FaCheckCircle className="text-green-300 text-lg" />
+                </div>
+
+                <div>
+                  <p className="text-xs md:text-sm opacity-70">Done</p>
+                  <h2 className="text-lg md:text-xl font-bold">{completed}</h2>
+                </div>
+              </div>
+
+              {/* PENDING */}
+              <div className="flex items-center gap-3 
+              bg-yellow-400/10 backdrop-blur-md 
+              border border-yellow-400/20 
+              p-4 rounded-xl shadow-md 
+              hover:scale-[1.03] transition">
+
+                <div className="p-3 bg-yellow-400/20 rounded-lg">
+                  <FaHourglassHalf className="text-yellow-300 text-lg" />
+                </div>
+
+                <div>
+                  <p className="text-xs md:text-sm opacity-70">Pending</p>
+                  <h2 className="text-lg md:text-xl font-bold">{pending}</h2>
+                </div>
+              </div>
+
             </div>
           </div>
 
-          {/* TASK */}
-          <div className="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-md space-y-4">
+          {/* 📊 CHART */}
+          <div className="bg-white dark:bg-gray-800 
+          p-4 md:p-6 rounded-2xl shadow-lg">
+
+            <h2 className="text-base md:text-lg font-semibold mb-3 dark:text-white">
+              📊 Task Analytics
+            </h2>
+
+            <TaskChart />
+          </div>
+
+          {/* 📝 TASK SECTION */}
+          <div className="bg-white dark:bg-gray-800 
+          p-4 md:p-6 rounded-2xl shadow-lg space-y-4">
+
+            <h2 className="text-base md:text-lg font-semibold dark:text-white">
+              📝 Your Tasks
+            </h2>
+
             <TaskInput />
             <TaskTable />
           </div>
 
-          {/* Schedule + Notes */}
-          <div className="bg-white dark:bg-gray-800 p-5 rounded-xl shadow">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* 📅 EXTRA SECTION */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+            <div className="bg-white dark:bg-gray-800 
+            p-4 md:p-5 rounded-2xl shadow-lg">
+              <h2 className="font-semibold mb-3 dark:text-white">
+                📅 Schedule
+              </h2>
               <Schedule />
+            </div>
+
+            <div className="bg-white dark:bg-gray-800 
+            p-4 md:p-5 rounded-2xl shadow-lg">
+              <h2 className="font-semibold mb-3 dark:text-white">
+                🗒 Notes
+              </h2>
               <Notes />
             </div>
+
           </div>
 
         </div>

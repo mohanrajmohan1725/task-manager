@@ -9,11 +9,41 @@ import { TaskProvider } from "./context/TaskContext";
 import { ProjectProvider } from "./context/ProjectContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 
+// 🔥 TOAST
+import { Toaster } from "react-hot-toast";
+
 function App() {
   return (
     <TaskProvider>
       <ProjectProvider>
         <BrowserRouter>
+
+          {/* 🔥 GLOBAL TOASTER */}
+          <Toaster
+            position="top-right"
+            reverseOrder={false}
+            toastOptions={{
+              style: {
+                background: "#1f2937",
+                color: "#fff",
+                borderRadius: "10px",
+                padding: "12px 16px",
+                fontSize: "14px",
+              },
+              success: {
+                iconTheme: {
+                  primary: "#22c55e",
+                  secondary: "#fff",
+                },
+              },
+              error: {
+                iconTheme: {
+                  primary: "#ef4444",
+                  secondary: "#fff",
+                },
+              },
+            }}
+          />
 
           <Routes>
 

@@ -1,11 +1,12 @@
 import { useState, useRef } from "react";
 import { useTasks } from "../context/TaskContext";
-import { useProjects } from "../context/ProjectContext"; // 🔥 ADD THIS
+import { useProjects } from "../context/ProjectContext";
 import { motion } from "framer-motion";
+import { FaPlus } from "react-icons/fa";
 
 function TaskInput() {
   const { addTask } = useTasks();
-  const { activeProjectId } = useProjects(); // 🔥 GET PROJECT ID
+  const { activeProjectId } = useProjects();
 
   const [text, setText] = useState("");
   const [priority, setPriority] = useState("low");
@@ -16,24 +17,26 @@ function TaskInput() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!text.trim()) return;
+    // ❌ project இல்லனா stop
+    if (!activeProjectId) {
+      alert("⚠ Please select a project first!");
+      return;
+    }
 
-    // 🔥 DEBUG (check this in console)
-    console.log("Active Project:", activeProjectId);
+    if (!text.trim()) return;
 
     const newTask = {
       text: text.trim(),
       priority,
       date,
-      projectId: activeProjectId, // ✅ IMPORTANT
+      projectId: activeProjectId,
     };
 
-    // ⚡ reset
+    // reset
     setText("");
     setPriority("low");
     setDate("");
 
-    // save
     addTask(newTask).catch((err) =>
       console.error("Add Task Error:", err)
     );
@@ -45,18 +48,23 @@ function TaskInput() {
     <form
       onSubmit={handleSubmit}
       className="space-y-4 max-w-2xl 
-      bg-white dark:bg-gray-800 
-      p-5 rounded-xl shadow-md 
+      bg-white/70 dark:bg-gray-800/70 
+      backdrop-blur-md
+      p-5 rounded-2xl shadow-lg 
       border border-gray-200 dark:border-gray-700 
       transition"
     >
-      {/* TASK INPUT */}
+      {/* 🔥 TASK INPUT */}
       <input
         ref={inputRef}
         type="text"
         value={text}
         onChange={(e) => setText(e.target.value)}
-        placeholder="Enter task..."
+        placeholder={
+          activeProjectId
+            ? "Enter your task..."
+            : "⚠ Select a project from sidebar"
+        }
         className="w-full p-3 border rounded-lg outline-none 
         bg-gray-50 dark:bg-gray-700 
         text-black dark:text-white 
@@ -64,7 +72,7 @@ function TaskInput() {
         focus:ring-2 focus:ring-blue-400 transition"
       />
 
-      {/* PRIORITY + DATE */}
+      {/* 🔥 PRIORITY + DATE */}
       <div className="flex gap-2">
         <select
           value={priority}
@@ -90,16 +98,16 @@ function TaskInput() {
         />
       </div>
 
-      {/* BUTTON */}
+      {/* 🔥 BUTTON */}
       <motion.button
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         type="submit"
-        disabled={!text.trim()}
-        className="bg-blue-500 text-white px-5 py-2 rounded-lg 
-        hover:bg-blue-600 transition 
-        disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full flex items-center justify-center gap-2 
+        bg-blue-500 text-white px-5 py-2 rounded-lg 
+        hover:bg-blue-600 shadow-md hover:shadow-lg transition"
       >
+        <FaPlus />
         Add Task
       </motion.button>
     </form>

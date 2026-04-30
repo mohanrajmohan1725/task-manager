@@ -4,6 +4,7 @@ import {
   FaCheckCircle,
   FaClock,
   FaBars,
+  FaFolder,
 } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { useTasks } from "../context/TaskContext";
@@ -13,47 +14,52 @@ export default function Sidebar() {
   const [open, setOpen] = useState(true);
 
   const { filter, setFilter } = useTasks();
+
+  // ✅ FIXED: use activeProjectId
   const {
     projects,
-    activeProject,
-    setActiveProject,
+    activeProjectId,
+    setActiveProjectId,
     deleteProject,
     editProject,
   } = useProjects();
 
   return (
     <motion.div
-      animate={{ width: open ? 256 : 64 }}
+      animate={{ width: open ? 260 : 70 }}
       className="bg-white dark:bg-gray-900 
       text-black dark:text-white 
       border-r dark:border-gray-700 
-      min-h-screen p-4 transition-all duration-300"
+      min-h-screen p-3 flex flex-col 
+      transition-all duration-300"
     >
-      {/* 🔝 Header */}
+      {/* HEADER */}
       <div className="flex items-center justify-between mb-6">
         {open && (
           <h2 className="text-xl font-bold tracking-wide">
-            TaskFlow
+            TaskFlow 🚀
           </h2>
         )}
+
         <FaBars
-          className="cursor-pointer text-lg"
+          className="cursor-pointer text-lg hover:scale-110 transition"
           onClick={() => setOpen(!open)}
         />
       </div>
 
-      {/* 🔥 Filters */}
+      {/* FILTERS */}
       <ul className="space-y-2 text-sm">
+
         {/* ALL */}
         <li
           onClick={() => {
             setFilter("all");
-            setActiveProject(null);
+            setActiveProjectId(null); // ✅ FIX
           }}
-          className={`flex items-center gap-3 cursor-pointer p-2 rounded-lg transition
+          className={`flex items-center gap-3 cursor-pointer p-2 rounded-lg transition-all
           ${
-            filter === "all" && !activeProject
-              ? "bg-blue-500 text-white"
+            filter === "all" && !activeProjectId
+              ? "bg-blue-500 text-white shadow-md"
               : "hover:bg-gray-100 dark:hover:bg-gray-800"
           }`}
         >
@@ -65,12 +71,12 @@ export default function Sidebar() {
         <li
           onClick={() => {
             setFilter("completed");
-            setActiveProject(null);
+            setActiveProjectId(null);
           }}
-          className={`flex items-center gap-3 cursor-pointer p-2 rounded-lg transition
+          className={`flex items-center gap-3 cursor-pointer p-2 rounded-lg transition-all
           ${
             filter === "completed"
-              ? "bg-blue-500 text-white"
+              ? "bg-green-500 text-white shadow-md"
               : "hover:bg-gray-100 dark:hover:bg-gray-800"
           }`}
         >
@@ -82,12 +88,12 @@ export default function Sidebar() {
         <li
           onClick={() => {
             setFilter("pending");
-            setActiveProject(null);
+            setActiveProjectId(null);
           }}
-          className={`flex items-center gap-3 cursor-pointer p-2 rounded-lg transition
+          className={`flex items-center gap-3 cursor-pointer p-2 rounded-lg transition-all
           ${
             filter === "pending"
-              ? "bg-blue-500 text-white"
+              ? "bg-yellow-500 text-white shadow-md"
               : "hover:bg-gray-100 dark:hover:bg-gray-800"
           }`}
         >
@@ -96,8 +102,9 @@ export default function Sidebar() {
         </li>
       </ul>
 
-      {/* 🔥 Projects */}
-      <div className="mt-6">
+      {/* PROJECT SECTION */}
+      <div className="mt-6 flex-1 overflow-y-auto">
+
         {open && (
           <p className="text-xs text-gray-400 mb-2 uppercase tracking-wide">
             Projects
@@ -105,29 +112,33 @@ export default function Sidebar() {
         )}
 
         {projects.length === 0 && open && (
-          <p className="text-gray-400 text-sm">No projects</p>
+          <p className="text-gray-400 text-sm text-center mt-3">
+            No projects 🚀
+          </p>
         )}
 
         {projects.map((p) => (
-          <div
+          <motion.div
             key={p.id}
-            className={`flex items-center justify-between p-2 rounded-lg mb-1 transition
+            whileHover={{ scale: 1.03 }}
+            className={`flex items-center justify-between p-2 rounded-lg mb-1 transition-all
             ${
-              activeProject?.id === p.id
-                ? "bg-blue-500 text-white"
+              activeProjectId === p.id
+                ? "bg-blue-500 text-white shadow-lg"
                 : "hover:bg-gray-100 dark:hover:bg-gray-800"
             }`}
           >
             {/* NAME */}
-            <span
+            <div
               onClick={() => {
-                setActiveProject(p);
+                setActiveProjectId(p.id); // ✅ FIXED
                 setFilter("all");
               }}
-              className="cursor-pointer flex-1 truncate"
+              className="flex items-center gap-2 cursor-pointer flex-1 truncate"
             >
-              {open ? p.name : "📁"}
-            </span>
+              <FaFolder />
+              {open && <span className="truncate">{p.name}</span>}
+            </div>
 
             {/* ACTIONS */}
             {open && (
@@ -141,7 +152,7 @@ export default function Sidebar() {
                       editProject(p.id, newName.trim());
                     }
                   }}
-                  className="hover:text-yellow-400"
+                  className="hover:text-yellow-400 hover:scale-110 transition"
                 >
                   ✏
                 </button>
@@ -149,15 +160,22 @@ export default function Sidebar() {
                 {/* DELETE */}
                 <button
                   onClick={() => deleteProject(p.id)}
-                  className="hover:text-red-400"
+                  className="hover:text-red-400 hover:scale-110 transition"
                 >
                   ❌
                 </button>
               </div>
             )}
-          </div>
+          </motion.div>
         ))}
       </div>
+
+      {/* FOOTER */}
+      {open && (
+        <div className="text-xs text-gray-400 text-center mt-4">
+          Made with ❤️
+        </div>
+      )}
     </motion.div>
   );
 }
